@@ -10,13 +10,17 @@ web3 = new Web3(new Web3.providers.HttpProvider(process.env.provider));
 code = fs.readFileSync('Voting.sol').toString();
 
 async function contractDeployent() {
-  const contestant = process.env.contestant.split(',');
-  compiledCode = await solc.compile(code);
-  const abiDefinition = JSON.parse(compiledCode.contracts[':Voting'].interface);
-  const VotingContract = await web3.eth.contract(abiDefinition);
-  const byteCode = compiledCode.contracts[':Voting'].bytecode;
-  const deployedContract = await VotingContract.new(contestant, { data: byteCode, from: web3.eth.accounts[0], gas: 4700000 })
-  return VotingContract.at(deployedContract.address);
+  try {
+    const contestant = process.env.contestant.split(',');
+    compiledCode = await solc.compile(code);
+    const abiDefinition = JSON.parse(compiledCode.contracts[':Voting'].interface);
+    const VotingContract = await web3.eth.contract(abiDefinition);
+    const byteCode = compiledCode.contracts[':Voting'].bytecode;
+    const deployedContract = await VotingContract.new(contestant, { data: byteCode, from: web3.eth.accounts[0], gas: 4700000 })
+    return VotingContract.at(deployedContract.address);
+  } catch (e) {
+    throw e;
+  }
 }
 
 co(contractDeployent).then((contractAddress) => {

@@ -9,6 +9,7 @@
   "author": "“Shishir <“shishir.sr01@gmail.com”>",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^4.0.0",
     "fs": "0.0.1-security",
     "ganache-cli": "^6.0.3",
     "solc": "^0.4.19",

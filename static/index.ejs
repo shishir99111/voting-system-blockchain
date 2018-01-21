@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Voting DApp</title>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+</head>
+<body class="container">
+  <h1>Voting DApp</h1>
+  <p>Rigg proof solution to choose your President **Just for fun</p>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Candidate</th>
+          <th>Votes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Trump</td>
+          <td id="candidate-1"></td>
+        </tr>
+        <tr>
+          <td>Hilary</td>
+          <td id="candidate-2"></td>
+        </tr>
+        <tr>
+          <td>Bieber</td>
+          <td id="candidate-3"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <input type="text" id="candidate" />
+  <a href="#" onclick="voteForCandidate()" class="btn btn-primary">Vote</a>
+</body>
+<script src="https://cdn.rawgit.com/ethereum/web3.js/develop/dist/web3.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script>
+</html>
+<script>
+    web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    abi = JSON.parse(`YOUR ABI HERE`);
+    VotingContract = web3.eth.contract(abi);
+    // In your nodejs console, execute contractInstance.address to get the address at which the contract is deployed and change the line below to use your deployed address
+    contractInstance = VotingContract.at('YOUR CONTRACT ADDRESS HERE');
+    candidates = {"Trump": "candidate-1", "Hilary": "candidate-2", "Bieber": "candidate-3"}
+
+    function voteForCandidate() {
+    candidateName = $("#candidate").val();
+    contractInstance.voteForCandidate(candidateName, {from: web3.eth.accounts[0]}, function() {
+        let div_id = candidates[candidateName];
+        $("#" + div_id).html(contractInstance.totalVotesFor.call(candidateName).toString());
+    });
+    }
+
+    $(document).ready(function() {
+    candidateNames = Object.keys(candidates);
+    for (var i = 0; i < candidateNames.length; i++) {
+        let name = candidateNames[i];
+        let val = contractInstance.totalVotesFor.call(name).toString()
+        $("#" + candidates[name]).html(val);
+    }
+    });
+</script>
